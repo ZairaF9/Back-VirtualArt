@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model categorias {
+  idcategorias  Int             @id @unique(map: "idcategorias") @default(autoincrement())
+  nombre        String          @db.VarChar(45)
+  imagen        Bytes?          @db.MediumBlob
+  publicaciones publicaciones[]
+}
+
+model comentarios {
+  idcomentarios Int           @id @unique(map: "idcomentarios") @default(autoincrement())
+  descripcion   String        @db.VarChar(350)
+  fecha         DateTime      @db.Date
+  idusuario     Int
+  idpublicacion Int
+  usuario       usuario       @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "comentarios_ibfk_1")
+  publicaciones publicaciones @relation(fields: [idpublicacion], references: [idpublicaciones], onDelete: NoAction, onUpdate: NoAction, map: "comentarios_ibfk_2")
+
+  @@index([idpublicacion], map: "idpublicacion")
+  @@index([idusuario], map: "idusuario")
+}
+
+model imagen {
+  idimagen      Int           @id @unique(map: "idimagen") @default(autoincrement())
+  imagen        Bytes         @db.MediumBlob
+  idpublicacion Int
+  publicaciones publicaciones @relation(fields: [idpublicacion], references: [idpublicaciones], onDelete: NoAction, onUpdate: NoAction, map: "imagen_ibfk_1")
+
+  @@index([idpublicacion], map: "idpublicacion")
+}
+
+model publicaciones {
+  idpublicaciones        Int                      @id @unique(map: "idpublicaciones") @default(autoincrement())
+  titulo                 String                   @db.VarChar(45)
+  descripcion            String                   @db.VarChar(250)
+  idcategoria            Int
+  idusuario              Int
+  comentarios            comentarios[]
+  imagen                 imagen[]
+  categorias             categorias               @relation(fields: [idcategoria], references: [idcategorias], onDelete: NoAction, onUpdate: NoAction, map: "publicaciones_ibfk_1")
+  usuario                usuario                  @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "publicaciones_ibfk_2")
+  publicacionesguardadas publicacionesguardadas[]
+  publicacionestablero   publicacionestablero[]
+
+  @@index([idcategoria], map: "idcategoria")
+  @@index([idusuario], map: "idusuario")
+}
+
+model publicacionesguardadas {
+  idpublicacionesguardadas Int           @id @unique(map: "idpublicacionesguardadas") @default(autoincrement())
+  idpublicacion            Int
+  idusuario                Int
+  publicaciones            publicaciones @relation(fields: [idpublicacion], references: [idpublicaciones], onDelete: NoAction, onUpdate: NoAction, map: "publicacionesguardadas_ibfk_1")
+  usuario                  usuario       @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "publicacionesguardadas_ibfk_2")
+
+  @@index([idpublicacion], map: "idpublicacion")
+  @@index([idusuario], map: "idusuario")
+}
+
+model publicacionestablero {
+  idpublicacionestablero Int           @id @unique(map: "idpublicacionestablero") @default(autoincrement())
+  idtablero              Int
+  idpublicacion          Int
+  tablero                tablero       @relation(fields: [idtablero], references: [idtablero], onDelete: NoAction, onUpdate: NoAction, map: "publicacionestablero_ibfk_1")
+  publicaciones          publicaciones @relation(fields: [idpublicacion], references: [idpublicaciones], onDelete: NoAction, onUpdate: NoAction, map: "publicacionestablero_ibfk_2")
+
+  @@index([idpublicacion], map: "idpublicacion")
+  @@index([idtablero], map: "idtablero")
+}
+
+model tablero {
+  idtablero            Int                    @id @unique(map: "idtablero") @default(autoincrement())
+  nombre               String                 @db.VarChar(45)
+  privacidad           Int
+  idusuario            Int
+  imagen               Bytes?                 @db.MediumBlob
+  publicacionestablero publicacionestablero[]
+  usuario              usuario                @relation(fields: [idusuario], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "tablero_ibfk_1")
+
+  @@index([idusuario], map: "idusuario")
+}
+
+model usuario {
+  idusuario              Int                      @id @unique(map: "idusuario") @default(autoincrement())
+  username               String                   @db.VarChar(45)
+  email                  String                   @db.VarChar(45)
+  userpassword           String?                  @db.VarChar(30)
+  fotoperfil             String?                  @db.VarChar(350)
+  comentarios            comentarios[]
+  publicaciones          publicaciones[]
+  publicacionesguardadas publicacionesguardadas[]
+  tablero                tablero[]
+}

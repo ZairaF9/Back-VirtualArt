@@ -1,0 +1,10 @@
+En el archivo .env colocaras la base de datos con tu usuario y password
+En la terminal harás lo siguiente:
+ - npx prisma db pull (lo que hara esque revisara si el schema esta al dia)
+ - npx prisma migrate dev --name initial-migration --create-only (este agregara la migracion si la base de datos tiene ya tablas)
+
+en app.js hay un ejemplo de obtener usuarios en este caso debe salir asi:
+[]
+
+fuente: https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-node-mysql
+        https://www.prisma.io/docs/guides/database/developing-with-prisma-migrate/add-prisma-migrate-to-a-project
